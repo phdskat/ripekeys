@@ -1,0 +1,40 @@
+---
+title: "RIPEkeys"
+author: "Rasmus Corlin Christensen"
+date: "27 sep 2017"
+output: pdf_document
+---
+
+#- Top RIPE keywords, 2010-2017
+
+# Loading the library
+library(tidyverse)
+
+# Loading the data (saved as a CSV with semi-colon separator)
+RIPEkeys <- read.csv("RIPEkeys.csv",sep = ";")
+
+# Mapping (mapped with keywords recordered by descending count (NB: antal is Danish for count))
+r <- ggplot(data=RIPEkeys, mapping=aes(x=reorder(keyword,-antal), y=antal))
+
+# Plotting (the mapped data + the column plot incl. fill defined as interchanging cornflowerblue and coral fill, 21 of each + label titles + adjusted x axis labels angle and position + adjusted x axis labels font and font size + y axis limits)
+r + geom_col(alpha=0.5, fill=rep(c("cornflowerblue","coral"),21)) + labs(x="",y="frequency",title="Most Frequently Occurring Keywords from RIPE Articles, 2010-2017") + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.3)) + theme(axis.text.x = element_text(face="bold", size=8)) + ylim(0,80)
+
+#- Top RIPE keywords over time, 2010-2017
+
+# Loading the library
+library(tidyverse)
+
+# Loading the data (saved as a CSV with semi-colon separator)
+RIPEkeystime <- read.csv("RIPEkeystime.csv", sep=";")
+
+# Ordering the keyword levels (couldn’t figure out how to do this by total count so here I have manually defined the ordering, from top to bottom)
+RIPEkeystime$keyword <- factor(RIPEkeystime$keyword,levels=c("globalization","power","policy","politics","state","developing countries","political economy", "governance", "institutions", "development"))
+
+# Mapping the data
+p <- ggplot(RIPEkeystime,aes(x=year,y=percent,colour=keyword))
+
+# Assigning a palette (HEX codes retrieved from ColorBrewer2 website)
+pPalette <- c("#a6cee3","#1f78b4","#b2df8a","#33a02c","#fb9a99","#e31a1c","#fdbf6f","#ff7f00","#cab2d6","#6a3d9a")
+
+# Plotting (the mapped data + the path plot + the assigned palette + label titles + defining the x axis breaks + defining y scale as percent)
+p + geom_path(alpha=1.0, size=1) + scale_colour_manual(values=pPalette) + labs(y="relative frequency",title="Relative Frequency of Top Ten Keywords from RIPE Articles, 2010-2017") + scale_x_continuous(breaks=c(2010,2011,2012,2013,2014,2015,2016,2017)) + scale_y_continuous(labels=scales::percent)
